@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "ox",
+	"version": "${version}",
+	"name": "Ox Cables",
+	"description": "Ox Cables",
+	"authors": [
+		"LatvianModder"
+	],
+	"contact": {
+		"sources": "https://github.com/latvian-dev/Ox-Cables",
+		"issues": "https://github.com/latvian-dev/Ox-Cables/issues"
+	},
+	"license": "GNU LGPLv3",
+	"icon": "ox_logo.png",
+	"entrypoints": {
+		"main": [
+			"dev.latvian.mods.ox.fabric.OxFabric"
+		]
+	},
+	"mixins": [
+		"ox-common.mixins.json",
+		"ox-fabric.mixins.json"
+	],
+	"accessWidener": "ox.accesswidener",
+	"depends": {
+		"minecraft": ">=1.18.2",
+		"architectury": ">=${architectury_version}"
+	}
+}

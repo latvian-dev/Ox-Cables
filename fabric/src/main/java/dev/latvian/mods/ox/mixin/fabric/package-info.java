@@ -1,0 +1,1 @@
+package dev.latvian.mods.ox.mixin.fabric;

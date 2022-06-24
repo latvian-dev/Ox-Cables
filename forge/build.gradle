@@ -1,0 +1,142 @@
+plugins {
+	id 'me.shedaniel.unified-publishing'
+}
+
+architectury {
+	platformSetupLoomIde()
+	forge()
+}
+
+configurations {
+	developmentForge.extendsFrom common
+}
+
+loom {
+	accessWidenerPath = project(":common").file("src/main/resources/ox.accesswidener")
+	forge {
+		convertAccessWideners = true
+		extraAccessWideners.add("ox.accesswidener")
+		mixinConfigs = [
+				"ox-forge.mixins.json",
+				"ox-common.mixins.json"
+		]
+	}
+}
+
+dependencies {
+	forge("net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}")
+
+	modApi("dev.architectury:architectury-forge:${rootProject.architectury_version}")
+
+	// modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
+	// modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+
+	// no reason to compile against the JEI API since REI already provides it,
+	// but if you want to use it at runtime, you can use this next line and remove the modLocalRuntime from REI.
+	// modLocalRuntime("mezz.jei:jei-1.18:${rootProject.forge_jei_version}")
+	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
+	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-plugin-compatibilities-forge:${rootProject.rei_version}")
+
+	common(project(path: ":common", configuration: "namedElements")) { transitive false }
+	bundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+}
+
+processResources {
+	def toReplace = [
+			"version"             : project.version,
+			"architectury_version": rootProject.architectury_version,
+			"forge_version"       : rootProject.forge_version
+	]
+
+	inputs.properties toReplace
+	filesMatching("META-INF/mods.toml") {
+		expand toReplace
+	}
+}
+
+jar {
+	manifest {
+		attributes([
+				"Specification-Title"     : project.mod_id,
+				"Specification-Vendor"    : project.mod_author,
+				"Specification-Version"   : "1",
+				"Implementation-Title"    : project.name,
+				"Implementation-Version"  : version,
+				"Implementation-Vendor"   : project.mod_author,
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+		])
+	}
+}
+
+components.java {
+	withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+		skip()
+	}
+}
+
+unifiedPublishing {
+	project {
+		releaseType = rootProject.artifact_type
+		gameVersions = [
+				rootProject.minecraft_version
+		]
+		gameLoaders = ["forge"]
+		displayName = "$mod_name Forge $project.version"
+		changelog = getGitChangelog()
+		mainPublication remapJar
+
+		relations {
+			depends {
+				curseforge = modrinth = "architectury-api"
+			}
+		}
+
+		if (ENV.CURSEFORGE_KEY) {
+			curseforge {
+				token = ENV.CURSEFORGE_KEY
+				id = project.curseforge_id
+			}
+		}
+
+		/*
+		if (ENV.MODRINTH_TOKEN) {
+			modrinth {
+				token = ENV.MODRINTH_TOKEN
+				id = project.modrinth_id
+				version = "$project.version+$project.name"
+			}
+		}
+		 */
+	}
+}
+
+publishing {
+	publications {
+		mavenForge(MavenPublication) {
+			artifactId = "${rootProject.archives_base_name}-${project.name}"
+			from components.java
+		}
+	}
+
+	repositories {
+		if (ENV.FTB_MAVEN_TOKEN) {
+			maven {
+				url "https://maven.ftb.dev/release"
+				credentials {
+					username = "latvian"
+					password = "${ENV.FTB_MAVEN_TOKEN}"
+				}
+			}
+		}
+
+		if (ENV.SAPS_TOKEN) {
+			maven {
+				url "https://maven.saps.dev/minecraft"
+				credentials {
+					username = "latvian"
+					password = "${ENV.SAPS_TOKEN}"
+				}
+			}
+		}
+	}
+}

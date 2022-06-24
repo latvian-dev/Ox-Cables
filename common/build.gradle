@@ -1,0 +1,47 @@
+dependencies {
+	modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+	modApi "dev.architectury:architectury:${rootProject.architectury_version}"
+
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.rei_version}")
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin:${rootProject.rei_version}")
+}
+
+architectury {
+	common("forge", "fabric")
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/ox.accesswidener")
+}
+
+publishing {
+	publications {
+		mavenCommon(MavenPublication) {
+			artifactId = rootProject.archivesBaseName
+			from components.java
+		}
+	}
+
+	repositories {
+		if (ENV.FTB_MAVEN_TOKEN) {
+			maven {
+				url "https://maven.ftb.dev/release"
+				credentials {
+					username = "latvian"
+					password = "${ENV.FTB_MAVEN_TOKEN}"
+				}
+			}
+		}
+
+		if (ENV.SAPS_TOKEN) {
+			maven {
+				url "https://maven.saps.dev/minecraft"
+				credentials {
+					username = "latvian"
+					password = "${ENV.SAPS_TOKEN}"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[40,)"
+issueTrackerURL = "https://github.com/latvian-dev/Ox-Cables/issues"
+license = "GNU LGPLv3"
+
+[[mods]]
+modId = "ox"
+version = "${version}"
+displayName = "Ox Cables"
+authors = "LatvianModder"
+description = '''
+Ox Cables
+'''
+logoFile = "ox_logo.png"
+license = "GNU LGPLv3"
+
+[[dependencies.ox]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ox]]
+modId = "architectury"
+mandatory = true
+versionRange = "[${architectury_version},)"
+ordering = "AFTER"
+side = "BOTH"
