@@ -3,7 +3,7 @@
 	"id": "ox",
 	"version": "${version}",
 	"name": "Ox Cables",
-	"description": "Ox Cables",
+	"description": "Ox Cables adds cable tool that lets you create free standing cables that can connect logic gates, redstone, machines and generators!",
 	"authors": [
 		"LatvianModder"
 	],
